@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>学习驾驶舱 · Learning Orchestrator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="/wiki-prose.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">LO</span>
+    <div><strong>学习驾驶舱</strong><span>Learning Orchestrator</span></div>
+  </div>
+  <nav class="app-navigation" aria-label="工作区"><a class="active" href="/">学习</a><a class="library-entry" href="/library.html">知识与复习</a><a href="/review-map.html">项目复习</a><a href="/review-batches.html">已登记复盘</a><a href="/workflows.html">流程与文档</a></nav>
+  <label class="course-picker"><span>当前课程</span>
+    <select id="course-select"></select>
+  </label>
+</header>
+
+<main class="shell">
+  <p id="sync-status" class="sync-status" role="status"><span id="sync-message">正在读取当前课程记录…</span> <span id="db-meta" class="db-meta" hidden></span></p>
+  <section class="hero panel">
+    <div class="hero-copy">
+      <span class="eyebrow">COURSE OVERVIEW</span>
+      <h1 id="course-title">正在加载课程…</h1>
+      <p id="course-summary" class="muted"></p>
+      <div class="progress-line">
+        <div class="progress-track"><span id="course-progress-bar"></span></div>
+        <strong id="course-progress-label">0 / 0</strong>
+      </div>
+    </div>
+    <div class="next-card">
+      <span class="eyebrow" id="next-action-eyebrow">建议下一步</span>
+      <h2 id="next-action-title">读取学习记录中…</h2>
+      <p id="next-action-detail" class="muted"></p>
+      <button id="continue-button" type="button">查看当前学习节点</button>
+    </div>
+  </section>
+
+  <section id="study-focus" class="panel study-focus" aria-live="polite"></section>
+  <section class="stats" aria-label="学习状态概览">
+    <article class="stat panel"><span>已验证掌握</span><strong id="stat-demonstrated">—</strong><small id="stat-demonstrated-sub"></small></article>
+    <article class="stat panel"><span>测试部分通过</span><strong id="stat-progress">—</strong><small>按知识目标的最近测试统计；已讲解不等于已通过</small></article>
+    <article class="stat panel warning"><span>薄弱 / 待复习</span><strong id="stat-review">—</strong><small id="stat-review-sub"></small></article>
+    <article class="stat panel"><span>材料覆盖</span><strong id="stat-coverage">—</strong><small id="stat-coverage-sub"></small></article>
+    <article class="stat panel" id="stat-chapter-card" hidden><span>章节级通过</span><strong id="stat-chapter">—</strong><small>按章节（unit）的通过记录统计，与目标级严格统计分开</small></article>
+  </section>
+
+  <section id="review-panel" class="panel review-panel" hidden>
+    <div class="section-heading">
+      <div><span class="eyebrow">OPTIONAL REMINDERS</span><h2>复习提醒 · 辅助排期</h2></div>
+      <span id="review-summary" class="muted"></span>
+    </div>
+    <p class="section-note">从下方「复习座舱」按基础知识或项目模块检查掌握；这里仅提供旧排期的辅助提醒，不决定学习顺序，也不等同于题目判断。</p>
+    <details><summary>展开辅助提醒（不是每日任务）</summary><div id="review-list" class="review-list"></div></details>
+  </section>
+
+  <section class="workspace panel">
+    <div class="path-panel">
+      <div class="section-heading">
+        <div><span class="eyebrow">YOUR LEARNING ROUTE</span><h2>从这里继续</h2></div>
+        <div class="legend">
+          <span><i class="dot untouched"></i>未验证</span>
+          <span><i class="dot in_progress"></i>部分通过</span>
+          <span><i class="dot struggling"></i>薄弱</span>
+          <span><i class="dot demonstrated"></i>已掌握</span>
+        </div>
+      </div>
+      <div class="route-views">
+        <button type="button" class="route-view-tab active" data-view="tree">学习树</button>
+        <button type="button" class="route-view-tab" data-view="knowledge">知识</button>
+        <button type="button" class="route-view-tab" data-view="project">项目理解</button>
+        <button type="button" class="route-view-tab" data-view="cockpit">本课复习</button>
+      </div>
+
+      <div id="learning-tree" class="learning-tree"></div>
+
+      <div id="knowledge-view" style="display:none">
+        <div class="route-views sub-views">
+          <button type="button" class="k-view-tab active" data-view="catalog">目录</button>
+          <button type="button" class="k-view-tab" data-view="graph">关系图</button>
+        </div>
+        <div id="knowledge-catalog"></div>
+        <div id="graph-pane" style="display:none">
+          <div class="graph-toolbar">
+            <div class="graph-controls">
+              <button type="button" id="graph-zoom-in" title="放大">＋</button>
+              <button type="button" id="graph-zoom-out" title="缩小">－</button>
+              <button type="button" id="graph-fit" title="缩放以显示整张图">适配全图</button>
+              <button type="button" id="graph-locate" title="居中并放大到正在学习的节点">◎ 回到正在学</button>
+            </div>
+            <div class="graph-selection" id="graph-selection" hidden>
+              <span id="graph-selection-title"></span>
+              <button type="button" id="graph-goto-detail">查看详情 ↑</button>
+            </div>
+          </div>
+          <div class="edge-filters" id="edge-filters"></div>
+          <p class="graph-hint">已有的包含、前置与顺序关系，点击进入同一份内容。拖动空白处平移，滚轮缩放；点章节底部「n/m 目标」展开或收起知识目标。旧图谱主要覆盖课程/模块/目标，与笔记索引的对应关系在逐步建立，未关联内容如实保留。</p>
+          <div class="graph-scroll" id="graph-scroll"><svg id="graph" height="620" aria-label="知识关系图"></svg></div>
+        </div>
+      </div>
+
+      <div id="project-view" style="display:none">
+        <div class="route-views sub-views">
+          <button type="button" class="p-view-tab active" data-view="map">代码结构</button>
+          <button type="button" class="p-view-tab" data-view="chain">请求主链</button>
+        </div>
+        <div id="code-map"></div>
+        <div id="request-chain" class="request-chain" style="display:none"></div>
+        <p class="section-note chain-note" style="display:none">主链步骤与代码模块划分不要求一致；点步骤看详情，关联模块在详情中互跳。顺序细节以步骤说明为准，不硬塞进架构图连线。</p>
+        <details class="source-nav"><summary>源码导航（目录 · 文件 · 符号，辅助定位，不代表架构关系）</summary>
+          <div id="code-structure" class="code-structure"></div>
+        </details>
+      </div>
+      <div id="cockpit-view" style="display:none">
+        <p class="section-note">按基础知识或项目模块找内容，用题目检查掌握。基本可以就过；需要深入时留下具体缺口。讲过、答题通过与排期是不同记录，不互相冒充。</p>
+        <div id="cockpit-pathways"></div>
+        <div class="cockpit-cols">
+          <div id="cockpit-knowledge"></div>
+          <div id="cockpit-modules"></div>
+        </div>
+        <p class="section-note" id="cockpit-note"></p>
+      </div>
+      <p class="section-note tree-note">学习树与左侧教学进度是同一份记录的不同范围；过程记录默认折叠，浏览不改变学习进度。</p>
+    </div>
+
+    <div class="detail-cell">
+      <aside class="detail-panel" id="detail">
+        <span class="eyebrow">NODE INSPECTOR</span>
+        <h2>选择一个知识点</h2>
+        <p class="muted">这里会显示它在主链中的位置、学习材料、历史误区和最近活动。浏览不会改变教学进度。</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="activity panel">
+    <div class="section-heading">
+      <div><span class="eyebrow">LEARNING LOG</span><h2>最近学习会话</h2></div>
+      <span id="session-summary" class="muted"></span>
+    </div>
+    <p id="record-summary" class="record-summary"></p>
+    <p class="section-note">以下每行统计该会话的事件；教学更新按课程单独统计，可能包含多轮讲解、答疑和状态更新。记录条数不代表掌握程度。</p>
+    <div class="table-wrap">
+      <table id="sessions-table">
+        <thead><tr><th>开始时间</th><th>教学位置 / 会话事件归属</th><th>模式</th><th>状态</th><th>会话事件数</th><th>总结</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div id="sessions-empty" class="empty-state">还没有学习会话。教学 AI 开始课程后，记录会出现在这里。</div>
+    </div>
+  </section>
+</main>
+
+<script src="/vendor/marked.umd.js"></script><script src="/vendor/purify.min.js"></script><script src="/vendor/katex/katex.min.js"></script>
+<script src="wiki-ui.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

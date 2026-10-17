@@ -1,0 +1,17 @@
+/* Shared reading typography, loaded after both workspace stylesheets. */
+.wiki-prose {font-size:15px;line-height:1.8;overflow-wrap:anywhere}
+.wiki-prose p {margin:9px 0;white-space:normal;font-size:inherit;line-height:inherit}
+.wiki-prose h2,.wiki-prose h3,.wiki-prose h4,.wiki-prose h5 {line-height:1.45;margin:25px 0 12px;color:#254655}
+.wiki-prose h3 {font-size:19px}.wiki-prose h4 {font-size:17px}.wiki-prose h5 {font-size:15px}
+.wiki-prose ul,.wiki-prose ol {padding-left:24px;margin:10px 0}.wiki-prose li {margin:5px 0}
+.wiki-prose blockquote {border-left:3px solid #8fbaa5;margin:12px 0;padding:5px 15px;background:#f3f8f5;color:#526b60}
+.wiki-prose figure {margin:17px 0;padding:12px;border:1px solid #e0e8eb;border-radius:9px;background:#fff;text-align:center}
+.wiki-prose img {display:block;max-width:100%;max-height:620px;width:auto;height:auto;margin:0 auto;object-fit:contain}
+.wiki-prose figcaption {font-size:12px;color:#73858e;margin-top:8px}
+.wiki-prose table {border-collapse:collapse;display:block;max-width:100%;overflow-x:auto;margin:14px 0;font-size:13px}
+.wiki-prose th,.wiki-prose td {border:1px solid #dce5e9;padding:8px 11px;text-align:left}.wiki-prose th {background:#f0f5f6}
+.wiki-prose pre {max-width:100%;overflow:auto;padding:16px;background:#f5f7fa;border:1px solid #dce5e9;border-radius:9px;line-height:1.65;tab-size:4}
+.wiki-prose pre code {display:block;font-family:Consolas,monospace;font-size:13px;padding:0;background:transparent;white-space:pre;word-break:normal;overflow-wrap:normal}
+.wiki-prose .code-label {font-size:11px;text-transform:uppercase;color:#68818e;margin-bottom:8px}
+.wiki-prose .katex {font-size:1.08em}.wiki-prose .katex-display {overflow-x:auto;overflow-y:hidden;padding:6px 0;margin:12px 0}
+.wiki-prose .wiki-missing-image {color:#87939a;font-size:12px;border:1px dashed #d6dfe3;padding:10px}

@@ -1,0 +1,6 @@
+{
+  "database": "data/learning_orchestrator.db",
+  "source_roots": ["sources", "notes"],
+  "seed": "empty",
+  "strategy_modules": []
+}

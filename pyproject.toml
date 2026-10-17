@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "learning-orchestrator"
+version = "0.2.0"
+description = "Local learning-orchestration plugin: canonical course graph, sessions, and progress in SQLite, driven by a desktop AI over MCP."
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+# The MCP adapter needs a newer Python than the core. Core + dashboard + tests
+# run on Python 3.8+ with the standard library only.
+mcp = ["mcp>=1.2,<2; python_version>='3.10'"]
+pdf = ["PyMuPDF>=1.23"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+learning-orchestrator-dashboard = "learning_orchestrator.dashboard:main"
+learning-orchestrator-workspace = "learning_orchestrator.workspace:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

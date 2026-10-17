@@ -1,0 +1,24 @@
+{
+  "name": "learning-orchestrator",
+  "version": "0.2.0",
+  "description": "Shared lessons, learning records, knowledge notes and original-question review workflows.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Learning Orchestrator",
+    "shortDescription": "Plan, teach, and review a course graph locally.",
+    "longDescription": "Builds context packs from structured course material, tracks learning evidence in SQLite, and visualizes the curriculum graph and review progress.",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": [
+      "course graph",
+      "learning progress",
+      "review planning",
+      "local sources"
+    ],
+    "defaultPrompt": "Resume the relevant LO position and handle the requested lesson preparation, record analysis, knowledge organization or original-question review using only the current scope."
+  },
+  "mcpServers": "./.mcp.json"
+}
